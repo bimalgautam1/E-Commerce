@@ -10,6 +10,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "bcrypt": "^5.1.1",
+    "D": "^1.0.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "nodejs": "^0.0.0",

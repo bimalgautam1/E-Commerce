@@ -1,5 +1,15 @@
-import express from "express";
-const app = express()
-import "./database/connection"
+import express  from 'express'
+import './database/connection'
+import userRoute from './routes/userRoute'
 
-export default app
+const app = express()
+
+app.use(express.json())
+
+
+// localhost:3000/api/auth/
+app.use("/api/auth",userRoute)
+
+
+export default app 
+

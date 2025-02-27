@@ -1,10 +1,11 @@
 import { Sequelize } from "sequelize-typescript";
 import {config} from "dotenv"
 import envConfig from "../config/config";
+import User from "./models/userModel";
 
 config()
 const sequelize = new Sequelize(envConfig.connection_string as string, {
-    dialect: "postgres"
+    dialect: "postgres",
 })
 
 try { 
