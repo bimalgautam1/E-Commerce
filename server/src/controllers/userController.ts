@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from 'bcrypt'
 import User from "../database/models/userModel";
+import generateToken from "../services/generateToken";
 
 class UserController{
     static async register(req:Request,res:Response){
@@ -16,7 +17,7 @@ class UserController{
         await User.create({
             username, 
             email, 
-            password: bcrypt.hashSync(password, 14)
+            password: bcrypt.hashSync(password, 14) 
     
         })
 
@@ -29,16 +30,48 @@ class UserController{
     
         })
     }
-    static async login(req:Request,res:Response){
-        // accept incoming data --> email, password
-        const {email, password} = req.body // password - manish --> hash() --> $234234324fjlsdf
+
+    static async login(req:Request, res:Response){
+        //accept incoming data --> email and password
+
+        const {email,password} = req.body
         if(!email || !password){
-            res.status(400).json({
-                message : "Please provide email, password"
+            res.status(200).json({
+                message: "Please provide email and password"
             })
             return
         }
+
+        //check if email is already sign or not
+        const user = await User.findAll({
+            where:{
+                email:email
+            }
+        })
+        if(user.length == 0){
+            res.status(404).json({
+                message: "No User with that email🥲"
+            })
+        }
+        else{
+            //check password
+            const isEqual = bcrypt.compareSync(password, user[0].password)
+            if(!isEqual){
+                res.status(400).json({
+                    message : "Invalid Password"
+                })
+            }
+            else{
+                res.status(200).json({
+                    message: "Login Successfully❤️"
+                })
+            }
+            
+        }
+
+        //check email first if exist or not, 
     }
+
 }
 
 export default UserController
