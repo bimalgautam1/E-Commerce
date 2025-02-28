@@ -43,27 +43,29 @@ class UserController{
         }
 
         //check if email is already sign or not
-        const user = await User.findAll({
+        const [user] = await User.findAll({
             where:{
                 email:email
             }
         })
-        if(user.length == 0){
+        if(!user){
             res.status(404).json({
                 message: "No User with that email🥲"
             })
         }
         else{
             //check password
-            const isEqual = bcrypt.compareSync(password, user[0].password)
+            const isEqual = bcrypt.compareSync(password, user.password)
             if(!isEqual){
                 res.status(400).json({
                     message : "Invalid Password"
                 })
             }
             else{
+                const token = generateToken(user.id)
                 res.status(200).json({
-                    message: "Login Successfully❤️"
+                    message: "Login Successfully❤️",
+                    token : token
                 })
             }
             
