@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import bcrypt from 'bcrypt'
 import User from "../database/models/userModel";
 import generateToken from "../services/generateToken";
+import generateOtp from "../services/generateOpt";
+import sendmail from "../services/sendMail";
 
 class UserController{
     static async register(req:Request,res:Response){
@@ -13,13 +15,26 @@ class UserController{
             })
             return
         }
-        // data --> users table ma insert garne 
-        await User.create({
-            username, 
-            email, 
-            password: bcrypt.hashSync(password, 14) 
-    
-        })
+        try {
+            if(password.length<=7){
+                res.status(400).json({
+                    message: "Password Length must be greater than 7"
+                })
+                return
+            } 
+            // data --> users table ma insert garne 
+            await User.create({
+                username, 
+                email, 
+                password: bcrypt.hashSync(password, 14) 
+        
+            })
+        } catch (error) {
+            res.status(500).json({
+                message : "Error while login",
+                error : error
+            })
+        }
 
         // await sequelize.query(`INSERT INTO users(id,username,email,password) VALUES (?,?,?,?)`, {
         //     replacements : ['b5a3f20d-6202-4159-abd9-0c33c6f70487', username,email,password], 
@@ -52,6 +67,7 @@ class UserController{
             res.status(404).json({
                 message: "No User with that email🥲"
             })
+            return
         }
         else{
             //check password
@@ -60,6 +76,7 @@ class UserController{
                 res.status(400).json({
                     message : "Invalid Password"
                 })
+                return
             }
             else{
                 const token = generateToken(user.id)
@@ -67,13 +84,46 @@ class UserController{
                     message: "Login Successfully❤️",
                     token : token
                 })
+                return
             }
             
         }
 
         //check email first if exist or not, 
     }
+    static async forgetPassword(req:Request, res:Response){
+        const {email} = req.body
 
-}
+        if(!email){
+            res.status(400).json({
+                message : "Enter your email"
+            });
+            return
+        }
+            const user = await User.findOne({
+                    where : {
+                        email : email
+                    }
+            })
+            if(!user){
+                res.status(404).json({
+                    email: "Email arenot registered"
+                })
+                return
+            }
+            const otp = generateOtp()
+            await sendmail({
+                to : email,
+                subject : "Reset your Password", 
+                text : `You just requested to reset your password. So, here is your otp ${otp}` 
+            })
+            res.status(200).json({
+                message: "OTP Has been sent"
+            })
+            
+            }
+        }
+    
+
 
 export default UserController
