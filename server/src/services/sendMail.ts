@@ -17,7 +17,7 @@ const transporter = nodemailer.createTransport({
     }
 })
 const mailOptions = {
-    from : "	CSIT Association of Nepal - Pokhara <csitanpokharaofficial@gmail.com>",
+    from : "	Bimal Gautam<gbimal3210@gmail.com>",
     to : data.to,
     subject : data.subject, 
     text : data.text
