@@ -5,7 +5,6 @@ import generateToken from "../services/generateToken";
 import generateOtp from "../services/generateOpt";
 import sendmail from "../services/sendMail";
 import sendResponse from "../services/sendResponse";
-import { pascal } from "postgres";
 import findData from "../services/findData";
 import checkOtpExpire from "../services/checkOTPExpire";
 
