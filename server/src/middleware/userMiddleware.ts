@@ -5,12 +5,21 @@ import envConfig from "../config/config";
 import User from "../database/models/userModel";
 
 
-enum Role{
+export enum Role{
     Admin = "admin",
     Customer = "customer"
 }
+interface IExtendedRequest extends Request{
+    user?:{
+        username:string,
+        email : string,
+        password:string,
+        id : string,
+        role: string
+    }
+}
 class UserMiddleware{
-    async isUserLoggedIn(req:Request,res:Response,next:NextFunction):Promise<void>{
+    async isUserLoggedIn(req:Request & IExtendedRequest,res:Response,next:NextFunction):Promise<void>{
 
         const token = req.headers.authorization
 
@@ -24,15 +33,28 @@ class UserMiddleware{
             }
             else{
                 const userData = await User.findByPk(result.userId)
-                //@ts-ignore
+                if(!userData){
+                    sendResponse(res,404,"Data not found")
+                    return
+                }
                 req.user = userData
                 next()
             }
         })
     }
     restrictTo(...roles:Role[]){
-        return(req:Request,res:Response,next:NextFunction)=>{
-            // let userRole = req.user.role
+        return(req:IExtendedRequest,res:Response,next:NextFunction)=>{
+            const extendedReq = req as IExtendedRequest;
+
+            if(!extendedReq.user){
+                sendResponse(res,403,"You are not logged in!")
+                return
+            }
+            if (!roles.includes(extendedReq.user.role as Role)) {
+                sendResponse(res, 403, "You do not have permission to perform this action");
+                return;
+            }
+         next()   
         }
     }
 

@@ -2,6 +2,8 @@ import { Model, Sequelize } from "sequelize-typescript";
 import {config} from "dotenv"
 import envConfig from "../config/config";
 import User from "./models/userModel";
+import Products from "./models/productModel";
+import Category from "./models/categoryModel";
 
 config()
 const sequelize = new Sequelize(envConfig.connection_string as string, {
@@ -20,5 +22,10 @@ const sequelize = new Sequelize(envConfig.connection_string as string, {
         console.error("❌ Database connection failed:", error);
     }
 })();
+
+//relationship
+Products.belongsTo(Category)
+Category.hasOne(Products)
+
 
 export default sequelize 
