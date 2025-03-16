@@ -24,8 +24,8 @@ const sequelize = new Sequelize(envConfig.connection_string as string, {
 })();
 
 //relationship
-Products.belongsTo(Category)
-Category.hasOne(Products)
+Products.belongsTo(Category,{foreignKey:"categoryId"})
+Category.hasMany(Products,{foreignKey:"categoryId"})
 
 
 export default sequelize 

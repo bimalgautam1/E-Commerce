@@ -3,15 +3,15 @@ import sendResponse from "../services/sendResponse";
 import Products from "../database/models/productModel";
 import Category from "../database/models/categoryModel";
 
-interface IProductRequest extends Response{
-    file:{
-        filename : string
-    }
-}
+// interface IProductRequest extends Request{
+//     file:{
+//         filename : string
+//     }
+// }
 
 class ProductController{
     async createProduct(req:Request,res:Response):Promise<void>{
-        const extendedReq = req as unknown as IProductRequest;
+        const extendedReq = req //as unknown as IProductRequest;
         const {productName, productDescription,productPrice,productTotalStock,discount,categoryId}=req.body
         const filename = extendedReq.file?extendedReq.file.filename : "imagelink"
         if(!productName|| !productDescription||!productPrice||!productTotalStock||!categoryId){
@@ -25,7 +25,7 @@ class ProductController{
             productTotalStock,
             discount:discount || 0,
             categoryId,
-            producImageUrl:filename
+            productImageUrl:filename
         })
         sendResponse(res,200,"Data successfully inserted")
     }
@@ -37,6 +37,10 @@ class ProductController{
                 }
             ]
         })
+        if(datas.length===0){
+            sendResponse(res,404,"No Products",)
+            return
+        }
         sendResponse(res,200,"Products Found",datas)
     }
     async getSingleProduct(req:Request,res:Response):Promise<void>{
@@ -107,7 +111,7 @@ if (Object.keys(updateData).length > 0) {
                     where : {id}
                 })
             }
-        sendResponse(res,200,"Products deleted successfully",)
+        sendResponse(res,200,"Products Updated successfully",)
     }
     }
 

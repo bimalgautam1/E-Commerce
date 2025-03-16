@@ -7,7 +7,7 @@ const app = express()
 
 app.use(express.json());
 
-sequelize.sync({force : false}).then(()=>{
+sequelize.sync({force : false,alter:false}).then(()=>{
     console.log("Synced!!")
 })
 // localhost:3000/api/auth/
