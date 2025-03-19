@@ -55,7 +55,7 @@ class UserController{
 
         const {email,password} = req.body
         if(!email || !password){
-            sendResponse(res,200,"Please provide email and password")
+            sendResponse(res,400,"Please provide email and password")
             return
         }
 

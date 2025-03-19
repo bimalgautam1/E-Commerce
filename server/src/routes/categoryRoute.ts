@@ -8,7 +8,12 @@ const router:Router = express.Router()
 // router.get("/register",UserController.register)
 
 
-router.route("/").get(categoryController.getCategories).post(userMiddleware.isUserLoggedIn,userMiddleware.restrictTo(Role.Admin), categoryController.addCategory)
-router.route("/:id").patch(userMiddleware.isUserLoggedIn,userMiddleware.restrictTo(Role.Admin),categoryController.updateCategories).delete(userMiddleware.isUserLoggedIn,userMiddleware.restrictTo(Role.Admin),categoryController.deleteCategories)
+router.route("/")
+.get(userMiddleware.isUserLoggedIn,errorHandler(categoryController.getCategories))
+.post(userMiddleware.isUserLoggedIn,userMiddleware.restrictTo(Role.Admin), errorHandler(categoryController.addCategory))
+
+router.route("/:id")
+.patch(userMiddleware.isUserLoggedIn,userMiddleware.restrictTo(Role.Admin),errorHandler(categoryController.updateCategories))
+.delete((userMiddleware.isUserLoggedIn),userMiddleware.restrictTo(Role.Admin),errorHandler(categoryController.deleteCategories))
 
 export default router  

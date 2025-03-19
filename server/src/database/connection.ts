@@ -16,7 +16,7 @@ const sequelize = new Sequelize(envConfig.connection_string as string, {
         await sequelize.authenticate();
         console.log("✅ Database connected successfully.");
 
-        await sequelize.sync({ force : false,alter: false }); // ✅ Ensures models sync to DB
+        await sequelize.sync({ force : false,alter: true }); // ✅ Ensures models sync to DB
         console.log("✅ Database synchronized.");
     } catch (error) {
         console.error("❌ Database connection failed:", error);
@@ -26,6 +26,8 @@ const sequelize = new Sequelize(envConfig.connection_string as string, {
 //relationship
 Products.belongsTo(Category,{foreignKey:"categoryId"})
 Category.hasMany(Products,{foreignKey:"categoryId"})
+
+
 
 
 export default sequelize 

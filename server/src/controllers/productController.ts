@@ -33,7 +33,8 @@ class ProductController{
         const datas = await Products.findAll({
             include :[
                 {
-                    model:Category
+                    model:Category,
+                    attributes:['id','categoryName'] 
                 }
             ]
         })
@@ -51,11 +52,17 @@ class ProductController{
             },
             include :[
                 {
-                    model:Category
+                    model:Category,
+                    //will make sure to send these attributes when this api is hitby not sending cratedat and updatedat.Problem called over-fetch
+                    attributes:['id','categoryName'] 
                 }
             ]
         })
-        sendResponse(res,200,"Products Found",datas)
+        res.status(200).json({
+            message:"Data found",
+            datas
+        })
+        // sendResponse(res,200,"Products Found",datas)
     }
     async deleteProduct(req:Request,res:Response):Promise<void>{
         const {id } = req.params
