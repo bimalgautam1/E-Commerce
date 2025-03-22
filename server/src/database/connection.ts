@@ -33,7 +33,10 @@ Category.hasMany(Products,{foreignKey:"categoryId"})
 Order.belongsTo(User, {foreignKey:"userId"})
 User.hasMany(Order, {foreignKey:"userId"})
 
-Payment.belongsTo(Order, {foreignKey:"orderId"})
+Payment.belongsTo(Order, { 
+    foreignKey: "orderId",
+    onDelete: "CASCADE"  // ✅ Ensures payment is deleted when order is deleted
+});
 Order.hasOne(Payment,{foreignKey:"orderId"})
 
 OrderDetail.belongsTo(Order,{foreignKey:"orderId"})

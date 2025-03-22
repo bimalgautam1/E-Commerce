@@ -23,6 +23,6 @@ class OrderDetail extends Model{
     @Column({
         type  :DataType.INTEGER
     })
-    declare quantiy : number
+    declare quantity : number
 }
 export default OrderDetail

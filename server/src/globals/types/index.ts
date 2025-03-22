@@ -10,7 +10,7 @@ export enum orderStatus{
 export enum paymentMethod{
     Khalti = 'khalti',
     Esewa = 'esewa',
-    COD = 'cod'
+    COD = 'COD'
     
 }
 

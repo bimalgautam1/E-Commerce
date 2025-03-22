@@ -1,4 +1,4 @@
-import { Table, Model, PrimaryKey, DataType, Column, IsNull, AllowNull, Unique } from "sequelize-typescript";
+import { Table, Model, PrimaryKey, DataType, Column, IsNull, AllowNull, Unique,Default } from "sequelize-typescript";
 import {paymentMethod, paymentStatus} from '../../globals/types'
 
 @Table({
@@ -22,6 +22,7 @@ export default class Payment extends Model{
     })
     declare paymentMethod : string
 
+    @Default(paymentStatus.Unpaid)
     @Column({
         type : DataType.ENUM(paymentStatus.Paid,paymentStatus.Unpaid)
     })
