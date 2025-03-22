@@ -4,6 +4,9 @@ import envConfig from "../config/config";
 import User from "./models/userModel";
 import Products from "./models/productModel";
 import Category from "./models/categoryModel";
+import Order from "./models/orderModel";
+import Payment from "./models/paymentModel";
+import OrderDetail from "./models/orderDetail";
 
 config()
 const sequelize = new Sequelize(envConfig.connection_string as string, {
@@ -26,6 +29,21 @@ const sequelize = new Sequelize(envConfig.connection_string as string, {
 //relationship
 Products.belongsTo(Category,{foreignKey:"categoryId"})
 Category.hasMany(Products,{foreignKey:"categoryId"})
+
+Order.belongsTo(User, {foreignKey:"userId"})
+User.hasMany(Order, {foreignKey:"userId"})
+
+Payment.belongsTo(Order, {foreignKey:"orderId"})
+Order.hasOne(Payment,{foreignKey:"orderId"})
+
+OrderDetail.belongsTo(Order,{foreignKey:"orderId"})
+Order.hasOne(OrderDetail,{foreignKey:"orderId"})
+
+OrderDetail.belongsTo(Products,{foreignKey:"productId"})
+Products.hasMany(OrderDetail,{foreignKey:"productId"})
+
+
+
 
 
 
