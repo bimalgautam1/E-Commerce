@@ -27,4 +27,9 @@ export default class Payment extends Model{
         type : DataType.ENUM(paymentStatus.Paid,paymentStatus.Unpaid)
     })
     declare paymentStatus : string
+
+    @Column({
+        type:DataType.STRING
+    })
+    declare pidx:string
 }

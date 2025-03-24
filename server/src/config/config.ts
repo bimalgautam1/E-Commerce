@@ -10,5 +10,6 @@ const envConfig = {
     admin_email : process.env.ADMIN_EMAIL as string,
     admin_password : process.env.ADMIN_PASSWORD as string,
     admin_username : process.env.ADMIN_USERNAME as string,
+    Live_secret_key : process.env.LIVE_SECRET_KEY as string
 }
 export default envConfig

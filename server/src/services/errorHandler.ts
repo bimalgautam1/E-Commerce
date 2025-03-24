@@ -4,6 +4,7 @@ const errorHandler = (fn: (req: Request, res: Response, next: NextFunction) => P
     return (req: Request, res: Response, next: NextFunction) => {
         try {
             const result = fn(req, res, next);
+            console.log(result);
             if (result instanceof Promise) {
                 result.catch((err) => next(err));
             }

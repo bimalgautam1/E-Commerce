@@ -4,7 +4,8 @@ import Order from "../database/models/orderModel";
 import OrderDetail from "../database/models/orderDetail";
 import { paymentMethod } from "../globals/types";
 import Payment from "../database/models/paymentModel";
-
+import axios from "axios";
+import envConfig from "../config/config";
 interface IProduct{
     productId : string,
     productQty: string
@@ -41,17 +42,35 @@ class OrderController{
             })
         });
         //Payments section
-        if(paymentmethod.toString() === paymentMethod.COD.toString()){
-            Payment.create({
+            const paymentData = await Payment.create({
                 orderId : orderData.id,
                 paymentMethod : paymentmethod
             })
-            sendResponse(res,200,"Payment Successfull")
-            return
-        }
-        // }else if(paymentmethod == paymentMethod.Khalti){
 
-        // }
+        if(paymentmethod == paymentMethod.Khalti){
+            const data = {
+                return_url : "http://localhost:5137/",
+                website_url : 'http://localhost:5137/',
+                amount : totalAmount * 100,
+                purchase_order_id : orderData.id,
+                purchase_order_name : 'order_'+orderData.id
+            }
+            const response = await axios.post("https://dev.khalti.com/api/v2/epayment/initiate/",data,{
+                headers:{
+                    Authorization:  envConfig.Live_secret_key
+                }
+            })      
+            const khaltiResponse = response.data
+            paymentData.pidx = khaltiResponse.pidx
+            paymentData.save()
+
+            res.status(200).json({
+                message:"Ordered Successfully using khalti",
+                url : khaltiResponse.payment_url
+            })
+
+        }
+        sendResponse(res,200,"Ordered Successfully using COD")
         // else{
 
         // 
