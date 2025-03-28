@@ -1,9 +1,10 @@
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import sendResponse from "../services/sendResponse";
 import Order from "../database/models/orderModel";
 import OrderDetail from "../database/models/orderDetail";
 import { paymentMethod } from "../globals/types";
 import Payment from "../database/models/paymentModel";
+import {paymentStatus} from '../globals/types/index'
 import axios from "axios";
 import envConfig from "../config/config";
 interface IProduct{
@@ -78,6 +79,42 @@ class OrderController{
         
         
 
+    }
+    static async verifyTransaction(req:OrderRequest,res:Response):Promise<void>{
+        const {pidx} = req.body
+        if(!pidx){
+            sendResponse(res,400,"Provide pidx")
+            return
+        }
+        const verifyPidx = await axios.post("https://dev.khalti.com/api/v2/epayment/lookup/",{pidx:pidx},
+            {
+                headers:{"Authorization":envConfig.Live_secret_key
+                }
+            }
+        )
+        const PaymentStatus = verifyPidx.data.status
+        console.log(verifyPidx);
+        
+        if(PaymentStatus=="Pending"){
+            sendResponse(res,200,"Payment Pending")
+        }
+        else if(PaymentStatus=="Completed"){
+            await Payment.update({paymentStatus:paymentStatus.Paid},{
+                where:{pidx:pidx}
+            })
+            console.log(pidx);
+            
+            sendResponse(res,200,"Payment Successfull")
+            return
+        }
+        sendResponse(res,400,"Something went wrong with paymert")
+        
+
+        // const pending = verifyPidx.
+        // if(!verifyPidx){
+        //     sendResponse(res,400,"Something went wrong")
+        // }
+        // sendResponse(res,200,"payment Successfull")
     }
 }
 
