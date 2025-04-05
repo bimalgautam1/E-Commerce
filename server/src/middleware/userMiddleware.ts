@@ -9,14 +9,8 @@ export enum Role{
     Admin = "admin",
     Customer = "customer"
 }
-interface IExtendedRequest extends Request{
-    user?:{
-        username:string,
-        email : string,
-        password:string,
-        id : string,
-        role: string
-    }
+export interface IExtendedRequest extends Request{
+    user?:User
 }
 class UserMiddleware{
     async isUserLoggedIn(req:Request & IExtendedRequest,res:Response,next:NextFunction):Promise<void>{

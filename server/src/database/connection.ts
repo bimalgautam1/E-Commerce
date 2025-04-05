@@ -1,4 +1,4 @@
-import { Model, Sequelize } from "sequelize-typescript";
+import { ForeignKey, Model, Sequelize } from "sequelize-typescript";
 import {config} from "dotenv"
 import envConfig from "../config/config";
 import User from "./models/userModel";
@@ -7,6 +7,7 @@ import Category from "./models/categoryModel";
 import Order from "./models/orderModel";
 import Payment from "./models/paymentModel";
 import OrderDetail from "./models/orderDetail";
+import Cart  from "./models/cartModel";
 
 config()
 const sequelize = new Sequelize(envConfig.connection_string as string, {
@@ -44,6 +45,12 @@ Order.hasOne(OrderDetail,{foreignKey:"orderId"})
 
 OrderDetail.belongsTo(Products,{foreignKey:"productId"})
 Products.hasMany(OrderDetail,{foreignKey:"productId"})
+
+Cart.belongsTo(Products, {foreignKey:"productId"})
+Products.hasMany(Cart,{foreignKey:"productId"})
+
+Cart.belongsTo(User,{foreignKey:"userId"})
+User.hasOne(Cart,{foreignKey:"userId"})
 
 
 
