@@ -1,57 +1,71 @@
-import { Request,Response,NextFunction } from "express";
-import sendResponse from "../services/sendResponse";
-import jwt  from "jsonwebtoken";
-import envConfig from "../config/config";
+import { NextFunction, Request, Response } from "express";
+import jwt from 'jsonwebtoken'
+import envConfig  from "../config/config";
+import UserController from "../controllers/userController";
 import User from "../database/models/userModel";
 
-
 export enum Role{
-    Admin = "admin",
+    Admin = 'admin', 
     Customer = "customer"
 }
-export interface IExtendedRequest extends Request{
-    user?:User
+
+interface IExtendedRequest extends Request{
+    user? : {
+        username : string, 
+        email : string, 
+        role : string, 
+        password : string, 
+        id : string
+
+    }
 }
 class UserMiddleware{
-    async isUserLoggedIn(req:Request & IExtendedRequest,res:Response,next:NextFunction):Promise<void>{
-
-        const token = req.headers.authorization
-
-        if(!token){
-            sendResponse(res,403,"Token must me provided")
-            return;
-        }
-        jwt.verify(token,envConfig.jwt_secretkey, async(err,result:any)=>{
-            if(err){
-                sendResponse(res,403,"Invalid Token")
-            }
-            else{
-                const userData = await User.findByPk(result.userId)
-                if(!userData){
-                    sendResponse(res,404,"Data not found")
-                    return
-                }
-                req.user = userData
-                next()
-            }
+    async isUserLoggedIn(req:IExtendedRequest,res:Response,next:NextFunction):Promise<void>{
+        // receive token 
+       const token =  req.headers.authorization // manish
+       if(!token){
+        res.status(403).json({
+            message : "Token must be provided"
         })
-    }
-    restrictTo(...roles:Role[]){
-        return(req:IExtendedRequest,res:Response,next:NextFunction)=>{
-            const extendedReq = req as IExtendedRequest;
-
-            if(!extendedReq.user){
-                sendResponse(res,403,"You are not logged in!")
+        return
+       }
+        // validate token 
+       jwt.verify(token,envConfig.jwtSecretKey as string, async (err,result:any)=>{
+        if(err){
+            res.status(403).json({
+                message : "Invalid token !!!"
+            })
+        }else{
+         //{userId : 123123123}
+            const userData = await User.findByPk(result.userId) // {email:"",pass:"",role:""}
+            if(!userData){
+                res.status(404).json({
+                    message : "No user with that userId"
+                })
                 return
             }
-            if (!roles.includes(extendedReq.user.role as Role)) {
-                sendResponse(res, 403, "You do not have permission to perform this action");
-                return;
+            req.user = userData 
+            next()
+        }
+       })
+
+    }
+    accessTo(...roles:Role[]){ 
+        return (req:IExtendedRequest,res:Response,next:NextFunction)=>{
+            let userRole = req.user?.role as Role
+           if(!roles.includes(userRole)){
+                res.status(403).json({
+                     message : "You dont have permission haiii!!"
+                })
+                return
             }
-         next()   
+            next()
         }
     }
-
 }
+
+
+
+
 
 export default new UserMiddleware

@@ -1,37 +1,30 @@
-import { Table, Model, PrimaryKey, DataType, Column, IsNull, AllowNull, Unique } from "sequelize-typescript";
+import {Table,Column,Model,DataType} from 'sequelize-typescript'
+
 
 @Table({
-    tableName: "users",
-    modelName: "User",
-    timestamps: true
+    tableName : "users", 
+    modelName : "User", 
+    timestamps : true
 })
 
 class User extends Model{
-    @PrimaryKey
     @Column({
+        primaryKey : true, 
         type : DataType.UUID, 
         defaultValue : DataType.UUIDV4
     })
     declare id:string
 
-    @Unique
-    @AllowNull(false)
     @Column({
         type : DataType.STRING
     })
     declare username:string
 
-    @Unique
-    @AllowNull(false)
     @Column({
-        type : DataType.STRING,
-        validate: {
-            isEmail: true
-        }
+        type : DataType.STRING
     })
     declare email:string
 
-    @AllowNull(false)
     @Column({
         type : DataType.STRING
     })
@@ -49,10 +42,9 @@ class User extends Model{
     declare otp:string
 
     @Column({
-        type:DataType.STRING
+        type : DataType.STRING
     })
     declare otpGeneratedTime : string
-
 }
 
 export default User

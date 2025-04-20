@@ -7,6 +7,7 @@ import productRoute from './routes/productRoute'
 import cartRoute from './routes/cartRoute'
 const app = express()
 
+
 app.use(express.json());
 
 sequelize.sync({force : false,alter:false}).then(()=>{

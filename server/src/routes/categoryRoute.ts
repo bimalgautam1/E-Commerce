@@ -1,19 +1,12 @@
-import express, { Router } from 'express'
-import errorHandler from '../services/errorHandler'
+
+
+
+import express,{Router} from 'express'
 import categoryController from '../controllers/categoryController'
 import userMiddleware, { Role } from '../middleware/userMiddleware'
 const router:Router = express.Router()
 
-// router.post("/register",UserController.register)
-// router.get("/register",UserController.register)
+router.route("/").get(categoryController.getCategories).post(userMiddleware.isUserLoggedIn, userMiddleware.accessTo(Role.Admin),categoryController.addCategory)
+router.route("/:id").patch(userMiddleware.isUserLoggedIn,userMiddleware.accessTo(Role.Admin), categoryController.updateCategory).delete(userMiddleware.isUserLoggedIn, userMiddleware.accessTo(Role.Admin), categoryController.deleteCategory)
 
-
-router.route("/")
-.get(userMiddleware.isUserLoggedIn,errorHandler(categoryController.getCategories))
-.post(userMiddleware.isUserLoggedIn,userMiddleware.restrictTo(Role.Admin), errorHandler(categoryController.addCategory))
-
-router.route("/:id")
-.patch(userMiddleware.isUserLoggedIn,userMiddleware.restrictTo(Role.Admin),errorHandler(categoryController.updateCategories))
-.delete((userMiddleware.isUserLoggedIn),userMiddleware.restrictTo(Role.Admin),errorHandler(categoryController.deleteCategories))
-
-export default router  
+export default router 

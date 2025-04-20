@@ -1,28 +1,26 @@
-//userID , productId , quantity
+// userId(fk), productId(fk), quantity
 
-import { Table, Column, DataType , NotNull,Model, PrimaryKey, AllowNull   } from "sequelize-typescript";
+import {Table,Column,Model, DataType} from 'sequelize-typescript'
 
 @Table({
-    tableName:"carts",
-    modelName:'Cart',
-    timestamps:true,
-    paranoid:true
+    tableName : "carts", 
+    modelName : "Cart", 
+    timestamps : true
 })
 
-class Cart extends Model{
-//primary key for Cart Table i.e id
-@PrimaryKey
+class Cart extends Model {
 @Column({
-    type:DataType.UUID,
-    defaultValue:DataType.UUIDV4
+    primaryKey : true, 
+    type : DataType.UUID, 
+    defaultValue : DataType.UUIDV4
 })
-declare id:string
+declare id : string 
 
-@AllowNull(false)
 @Column({
-    type:DataType.INTEGER
+    type : DataType.INTEGER, 
+    allowNull : false
 })
-declare productquantity:number
+declare quantity : number
+
 }
-
 export default Cart

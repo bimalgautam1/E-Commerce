@@ -1,51 +1,85 @@
 
-import {Table,Column,Model,DataType, PrimaryKey, AllowNull} from 'sequelize-typescript'
-import { orderStatus } from '../../globals/types'
+import {Table,Column,Model,DataType}  from 'sequelize-typescript'
+import { OrderStatus } from '../../globals/types'
 
 @Table({
-    tableName:'orders',
-    modelName: "Order",
-    timestamps:true,
-    paranoid:true
+    tableName : "orders", 
+    modelName : "Order", 
+    timestamps : true
 })
 
 class Order extends Model{
-    @PrimaryKey
     @Column({
-        type:DataType.UUID,
-        defaultValue: DataType.UUIDV4
+        primaryKey : true, 
+        type : DataType.UUID, 
+        defaultValue : DataType.UUIDV4
     })
-    declare id:string
+    declare id : string 
 
-    @AllowNull(false)
     @Column({
-        type:DataType.STRING,
-        validate:{
-            len:{
-                args :[10,10],
-                msg:'Phone number must be of size 10'
+        type : DataType.STRING, 
+        allowNull : false, 
+        validate : {
+            len : {
+                args : [10,10], 
+                msg : "Phone number must be 10 digits. 10 vanda sano thulo hunu vayena !"
             }
         }
     })
-    declare phoneNumber : string
-
-    @AllowNull(false)
-    @Column({
-        type:DataType.STRING,
-    })
-    declare shippingAddress : string
-
-    @AllowNull(false)
-    @Column({
-        type:DataType.FLOAT,
-    })
-    declare totalAmount:number
+    declare phoneNumber : string 
 
     @Column({
-        type:DataType.ENUM(orderStatus.Cancelled,orderStatus.Delivered,orderStatus.Onthewaty,orderStatus.Pending,orderStatus.Preparation),
-        defaultValue : orderStatus.Pending
+        type : DataType.STRING, 
+      
     })
-    declare orderStatus : string
+    declare AddressLine : string 
+    @Column({
+        type : DataType.STRING, 
+       
+    })
+    declare City : string 
+    @Column({
+        type : DataType.STRING, 
+       
+    })
+    declare State : string 
+    @Column({
+        type : DataType.STRING, 
+       
+    })
+    declare zipCode : string 
+
+    @Column({
+        type : DataType.FLOAT, 
+        allowNull : false
+    })
+    declare totalAmount : number 
+
+    @Column({
+        type : DataType.ENUM(OrderStatus.Cancelled,OrderStatus.Delivered,OrderStatus.Ontheway,OrderStatus.Pending,OrderStatus.Preparation), 
+        defaultValue : OrderStatus.Pending
+    })
+    declare orderStatus :string
+    @Column({
+        type : DataType.STRING, 
+        allowNull : false, 
+        defaultValue : "Anonymous"
+    })
+    declare firstName : string 
+    @Column({
+        type : DataType.STRING, 
+        allowNull : false, 
+        defaultValue : "Anonymous"
+    })
+    declare lastName : string 
+    @Column({
+        type : DataType.STRING, 
+        allowNull : false, 
+        defaultValue : "anonymous@gmail.com"
+    })
+    declare email : string 
+
+    
 }
 
 export default Order

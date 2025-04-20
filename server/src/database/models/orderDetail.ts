@@ -1,28 +1,25 @@
-
-import {Table,Column,Model,DataType, PrimaryKey, AllowNull} from 'sequelize-typescript'
+import {Table,Column,Model,DataType}  from 'sequelize-typescript'
 
 
 @Table({
-    tableName:'orderDetails',
-    modelName: "Orderdetails",
-    timestamps:true,
-    paranoid:true
+    tableName : "orderDetails", 
+    modelName : "OrderDetails", 
+    timestamps : true
 })
 
-class OrderDetail extends Model{
-    
-    @PrimaryKey
-    @AllowNull(false)
+class OrderDetails extends Model{
     @Column({
-        type : DataType.UUID,
+        primaryKey : true, 
+        type : DataType.UUID, 
         defaultValue : DataType.UUIDV4
     })
-    declare id : string
+    declare id : string 
 
-    @AllowNull(false)
     @Column({
-        type  :DataType.INTEGER
+        type : DataType.INTEGER, 
+        allowNull : false 
     })
-    declare quantity : number
+    declare quantity : number 
 }
-export default OrderDetail
+
+export default OrderDetails

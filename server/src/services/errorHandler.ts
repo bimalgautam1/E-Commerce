@@ -1,17 +1,17 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express"
 
-const errorHandler = (fn: (req: Request, res: Response, next: NextFunction) => Promise<any> | void) => {
-    return (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const result = fn(req, res, next);
-            console.log(result);
-            if (result instanceof Promise) {
-                result.catch((err) => next(err));
-            }
-        } catch (err) {
-            next(err);
-        }
-    };
-};
 
-export default errorHandler;
+const errorHandler = (fn:Function)=>{
+    return (req:Request,res:Response)=>{
+        fn(req,res).catch((err:Error)=>{
+            console.log(err)
+            res.status(500).json({
+                message : "Internal error", 
+                errorMessage : err.message
+            })
+            return
+        })
+    }
+}
+
+export default errorHandler 

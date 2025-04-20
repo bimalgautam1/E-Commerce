@@ -1,16 +1,12 @@
-import jwt from "jsonwebtoken"
-import envConfig from "../config/config";
+import jwt from 'jsonwebtoken'
+import  envConfig  from '../config/config'
 
-const generateToken = (userId:string)=>{
-    try {
-        //token generate
-    const token = jwt.sign({userId:userId}, envConfig.jwt_secretkey as string,{
-        expiresIn : "10d"    
+const generateToken = (userId : string)=>{
+    // token generate (jwt)
+    const token = jwt.sign({userId : userId},envConfig.jwtSecretKey as string,{
+        expiresIn : '10d'
     })
-    return token
-    } catch (error) {
-        console.log(error)
-    }
+    return token 
 }
 
 export default generateToken

@@ -1,126 +1,89 @@
 import { Request, Response } from "express";
-import sendResponse from "../services/sendResponse";
-import Products from "../database/models/productModel";
+import Product from "../database/models/productModel";
 import Category from "../database/models/categoryModel";
 
-// interface IProductRequest extends Request{
-//     file:{
-//         filename : string
-//     }
-// }
 
 class ProductController{
     async createProduct(req:Request,res:Response):Promise<void>{
-        const extendedReq = req //as unknown as IProductRequest;
-        const {productName, productDescription,productPrice,productTotalStock,discount,categoryId}=req.body
-        const filename = extendedReq.file?extendedReq.file.filename : "imagelink"
-        if(!productName|| !productDescription||!productPrice||!productTotalStock||!categoryId){
-            sendResponse(res,400,"Please provide productName,productDescription,productPrice,productTotalStock,discount,categoryId")
+      
+            const {productName,productDescription,productPrice,productTotalStock,discount,categoryId} = req.body 
+        const filename = req.file ? req.file.filename : "https://weimaracademy.org/wp-content/uploads/2021/08/dummy-user.png"
+        if(!productName || !productDescription || !productPrice || !productTotalStock  || !categoryId){
+            res.status(400).json({
+                message : "Please provide productName,productDescription,productPrice,productTotalStock,discount,categoryId"
+            })
             return
         }
-        await Products.create({
-            productName, 
+        const product =  await Product.create({
+            productName,
             productDescription,
             productPrice,
             productTotalStock,
-            discount:discount || 0,
-            categoryId,
-            productImageUrl:filename
+            discount : discount || 0,
+            categoryId:categoryId, 
+            productImageUrl : filename
         })
-        sendResponse(res,200,"Data successfully inserted")
-    }
-    async getAllProducts(req:Request,res:Response):Promise<void>{
-        const datas = await Products.findAll({
-            include :[
-                {
-                    model:Category,
-                    attributes:['id','categoryName'] 
-                }
-            ]
+        res.status(200).json({
+            message : "Product created successfully", 
+            data : product
         })
-        if(datas.length===0){
-            sendResponse(res,404,"No Products",)
-            return
-        }
-        sendResponse(res,200,"Products Found",datas)
+  
     }
-    async getSingleProduct(req:Request,res:Response):Promise<void>{
-        const {id } = req.params
-        const datas = await Products.findAll({
-            where :{
-                id:id
-            },
-            include :[
+    async getAllProducts(req:Request,res:Response) : Promise<void>{
+        const datas = await Product.findAll({
+            include : [
                 {
-                    model:Category,
-                    //will make sure to send these attributes when this api is hitby not sending cratedat and updatedat.Problem called over-fetch
-                    attributes:['id','categoryName'] 
+                    model : Category, 
+                    attributes : ['id','categoryName']
                 }
             ]
         })
         res.status(200).json({
-            message:"Data found",
-            datas
+            message : "Products fetched successfully", 
+            data : datas
         })
-        // sendResponse(res,200,"Products Found",datas)
     }
-    async deleteProduct(req:Request,res:Response):Promise<void>{
-        const {id } = req.params
-        const datas = await Products.findAll({
-            where :{
-                id:id
-            }
+    async getSingleProduct(req:Request,res:Response) : Promise<void>{
+        const {id} = req.params
+        const [datas] = await Product.findAll({
+            where : {
+                id : id
+            },
+            include : [
+                {
+                    model : Category, 
+                    attributes : ['id','categoryName']
+                }
+            ]
         })
-            if(datas.length === 0){
-                sendResponse(res,404, "Product not found")
-            }
-            else{
-                await Products.destroy({
-                    where:{
-                        id:id
-                    }
-                })
-            }
-        sendResponse(res,200,"Products deleted successfully",)
+        res.status(200).json({
+            message : "Products fetched successfully", 
+            data : datas
+        })
     }
-    async updateProduct(req:Request,res:Response):Promise<void>{
-        const {productName, productDescription,productPrice,productTotalStock,discount,categoryId}=req.body
-        const updateData: Record<string, any> = {};
-        const {id } = req.params
-        const datas = await Products.findAll({
-            where :{
-                id:id
+    async deleteProduct(req:Request,res:Response) : Promise<void>{
+        const {id} = req.params
+        const datas = await Product.findAll({
+            where : {
+                id : id
             }
         })
-            if(datas.length === 0){
-                sendResponse(res,404, "Product not found")
-            }
-            else{
-                if (productName) updateData.productName = productName;
-                if (productDescription) updateData.productDescription = productDescription;
-                if (productPrice) updateData.productPrice = productPrice;
-                if (productTotalStock) updateData.productTotalStock = productTotalStock;
-                if (discount) updateData.discount = discount;
-
-if (Object.keys(updateData).length > 0) { 
-    await Products.update(updateData, { where: { id } });
-} else {
-    sendResponse(res, 400, "No valid fields provided for update");
-    return;
+        if(datas.length === 0){
+            res.status(404).json({
+                message : "No product with that id"
+            })
+        }else{
+            await Product.destroy({
+                where : {
+                    id : id
+                }
+            })
+            res.status(200).json({
+                message : "Products deleted successfully", 
+                data : datas
+            })
+        }
+    }
 }
-                await Products.update({
-                    productName : productName,
-                    productDescription : productDescription,
-                    productPrice : productPrice,
-                    productTotalStock : productTotalStock,
-                    discount : discount
-                },{
-                    where : {id}
-                })
-            }
-        sendResponse(res,200,"Products Updated successfully",)
-    }
-    }
 
-    export default new ProductController
-
+export default new ProductController

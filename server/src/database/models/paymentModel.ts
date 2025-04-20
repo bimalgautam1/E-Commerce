@@ -1,35 +1,36 @@
-import { Table, Model, PrimaryKey, DataType, Column, IsNull, AllowNull, Unique,Default } from "sequelize-typescript";
-import {paymentMethod, paymentStatus} from '../../globals/types'
+import {Table,Column,Model,DataType}  from 'sequelize-typescript'
+import { PaymentMethod, PaymentStatus } from '../../globals/types'
+
 
 @Table({
-    tableName: "payment",
-    modelName: "Payment",
-    timestamps: true
+    tableName : "payment", 
+    modelName : "Payment", 
+    timestamps : true
 })
 
-export default class Payment extends Model{
-    @PrimaryKey
+class Payment extends Model{
     @Column({
-        type: DataType.UUID,
-        defaultValue: DataType.UUIDV4
+        primaryKey : true, 
+        type : DataType.UUID, 
+        defaultValue : DataType.UUIDV4
     })
-    declare id : string
-
-    @AllowNull(false)
+    declare id : string 
     @Column({
-        type:DataType.ENUM(paymentMethod.COD,paymentMethod.Esewa,paymentMethod.Khalti),
-        
+        type : DataType.ENUM(PaymentMethod.COD,PaymentMethod.Esewa,PaymentMethod.Khalti), 
+        defaultValue : PaymentMethod.COD
     })
-    declare paymentMethod : string
+    declare paymentMethod : string 
 
-    @Default(paymentStatus.Unpaid)
     @Column({
-        type : DataType.ENUM(paymentStatus.Paid,paymentStatus.Unpaid)
+        type : DataType.ENUM(PaymentStatus.Paid,PaymentStatus.Unpaid), 
+        defaultValue : PaymentStatus.Unpaid
     })
     declare paymentStatus : string
 
     @Column({
-        type:DataType.STRING
+        type : DataType.STRING, 
     })
     declare pidx:string
 }
+
+export default Payment

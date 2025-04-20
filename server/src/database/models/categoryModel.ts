@@ -1,25 +1,24 @@
-import { Table, Column , AllowNull ,Model, PrimaryKey , DataType } from "sequelize-typescript";
+import { Column, DataType, Table,Model } from "sequelize-typescript";
+
 
 @Table({
-    tableName : "categories",
-    modelName : "Category",
+    tableName : "categories", 
+    modelName : "Category", 
     timestamps : true
 })
 
 class Category extends Model{
-    @PrimaryKey
     @Column({
-        type : DataType.UUID,
+        primaryKey : true, 
+        type : DataType.UUID, 
         defaultValue : DataType.UUIDV4
     })
-    declare id : string
+    declare id : string 
 
-    @AllowNull(false)
     @Column({
-        type : DataType.STRING,
+        type : DataType.STRING, 
+        allowNull : false // required : false 
     })
-    declare categoryName : string
-
+    declare categoryName : string 
 }
-
 export default Category

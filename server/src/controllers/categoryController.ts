@@ -1,106 +1,123 @@
-import { Request, Response } from "express";
-import bcrypt from 'bcrypt'
-import User from "../database/models/userModel";
-import generateToken from "../services/generateToken";
-import generateOtp from "../services/generateOpt";
-import sendmail from "../services/sendMail";
-import sendResponse from "../services/sendResponse";
-import findData from "../services/findData";
-import checkOtpExpire from "../services/checkOTPExpire";
-import Category from "../database/models/categoryModel";
+import { Request, Response } from "express"
+import Category from "../database/models/categoryModel"
 
+
+/*
+electronics, grocies, foods
+seed mathi ko data , 
+
+custom categories 
+delete , fetch, update 
+*/
 class CategoryController{
     categoryData = [
-        {categoryName : "Electronics"},
-        {categoryName : "Groceries"},
-        {categoryName : "Foods"},
+        {
+            categoryName : "Electronics"
+        }, 
+        {
+            categoryName : "Groceries"
+        },
+        {
+            categoryName : "Foods"
+        }
     ]
-
     async seedCategory():Promise<void>{
-        const datas = await Category.findAll()
-        if(datas.length===0){
-            await Category.bulkCreate(this.categoryData)
-            console.log("Categories seeded Successfully")
-        }
+
+            const datas = await Category.findAll()
+            if(datas.length === 0){
+                await Category.bulkCreate(this.categoryData)
+                console.log("Categories seeded successfully")
+            }else{
+                console.log("Categories already seeded")
+            }
+
+      
     }
-    async addCategory(req: Request,res:Response):Promise<void>{
-        const {categoryName} = req.body
+    async addCategory(req:Request,res:Response):Promise<void>{
+        //@ts-ignore
+       
+        const {categoryName} = req.body 
         if(!categoryName){
-            res.status(400).json({message : "Please provide category name"})
-            return
-        }
-        const checkCategory = await Category.findAll({
-            where :{categoryName : categoryName}
-        })
-         try {
-            if(checkCategory.length === 0){
-                await Category.create({
-                    categoryName
-                })
-                sendResponse(res,200,"Category Created Successfully")
-                return
-            }
-            else{
-                res.status(400).json({message : "Category alreay exist"})
-            }
-         } catch (error) {
             res.status(400).json({
-                message :"Something went wrong while adding categories",
-                error
-                
+                message : "Please provide categoryName"
             })
-         }
+            return 
+        }
+        const category = await Category.create({
+            categoryName
+        })
+        res.status(200).json({
+            message : "Category created successfully ", 
+            data : category
+        })
     }
-    async getCategories(req: Request,res:Response){
+    async getCategories(req:Request,res:Response):Promise<void>{
         const data = await Category.findAll()
-
-        res.status(200).json({message :"Categories fetched",data})
+        res.status(200).json({
+            messagage : "fetched categories", 
+            data
+        })
     }
-    async deleteCategories(req: Request,res:Response){
-        const  {id} = req.params
-
+    async deleteCategory(req:Request,res:Response):Promise<void>{
+        const {id} = req.params 
         if(!id){
             res.status(400).json({
-                message :"Porvide id to delete data"
+                message : "Please provide id to delete"
             })
-            return
+            return 
         }
         const data = await Category.findAll({
-            where : {id :id}
-        })
+            where : {
+                id : id
+            }
+        }) // array return 
+        // const data = await Category.findByPk(id) // object return 
         if(data.length === 0){
-            res.status(400).json({message:"NO categories found"})
-        }
-        else{
-            await Category.destroy({
-                where : {id}
+            res.status(404).json({
+                message : "No category with that id"
             })
-            res.status(200).json({message : "Successfully deleted"}) 
+        }else{
+            await Category.destroy({
+                where : {
+                    id 
+                }
+            })
+            res.status(200).json({
+                message : "category deleted successfully"
+            })
         }
     }
-    async updateCategories(req: Request,res:Response){
+    async updateCategory(req:Request,res:Response):Promise<void>{
         const {id} = req.params
-        const {categoryName } = req.body
-        if(!categoryName || !id){
-            res.status(400).json({message : "Provide your categoryname or id to update"})
-            return
+        const {categoryName} = req.body 
+        if(!id || !categoryName){
+            res.status(400).json({
+                message : "Please provide id, categoryName to update"
+            })
+            return 
         }
-        const data  = await Category.findAll({
-            where : {id:id}
-        })
-        if(data.length===0){
-            res.status(400).json({message: "Data not found"})
-            return
+        const data = await Category.findAll({
+            where : {
+                id : id
+            }
+        }) // array return 
+        // const data = await Category.findByPk(id) // object return 
+        if(data.length === 0){
+            res.status(404).json({
+                message : "No category with that id"
+            })
+        }else{
+            await Category.update({
+                categoryName : categoryName
+            },{
+                where : {
+                    id
+                }
+            })
+            res.status(200).json({
+                message : "Category updated successfully"
+            })
         }
-        await Category.update({
-            categoryName : categoryName
-        },{
-            where : {id}
-        })
-        res.status(200).json({message :"Category Successfully Updated"})
-
-
     }
 }
-
 export default new CategoryController
